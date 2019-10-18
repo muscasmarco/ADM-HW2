@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     print('Loading the events dataset')
     event_ds = pd.read_json('./dataset/events/events_England.json')
+    
     print('Dataset loaded')    
     
     player_performance = {}
