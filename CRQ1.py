@@ -16,6 +16,8 @@ if __name__ == '__main__':
     print("Loading datasets...")
     events = pd.read_json('./dataset/events/events_England.json')
     matches = pd.read_json('./dataset/matches/matches_England.json')
+    teams = pd.read_json('./dataset/teams.json')
+    players = pd.read_json('./dataset/players.json')
     print("Datasets loaded.")
     
     cols = ['playerId', 'matchPeriod','matchId','teamId', 'eventSec', 'eventInterval']
@@ -50,33 +52,94 @@ if __name__ == '__main__':
         period = goals_df['matchPeriod'][i]
         
         minutes = seconds // 60.0
-                
+        
+        if minutes == 0:
+            print('Goal at first minute,',period)
+        
         if period == '1H':
             if minutes < 45:
-                interval = minutes // 9
+                interval = minutes // 9 # 1H with no extra time
             else:
-                interval = 5
+                interval = 5 # Extra time of the 1H
         elif period == '2H':
             if minutes < 45:
-                interval = 6 + ( minutes // 9)
+                interval = 6 + ( minutes // 9) # 2H with no extra time
             else:
-                interval = 11
+                interval = 11 # Extra time of the 2H
         
         goals_df.at[i, 'eventInterval'] = interval
         
-        print(type(minutes))
-        
-    fr_interval = np.zeros(12)
-    for a in range (0, 12):
+    fr_interval = np.zeros(12) # Frequencies interval
+    for index_interval in range (0, 12):
         for i in range(len(goals_df)):       
-            if goals_df['eventInterval'][i] == a:
-                fr_interval[a] += 1
-                
+            if goals_df['eventInterval'][i] == index_interval:
+                fr_interval[index_interval] += 1
+    
+    
+    # Plotting the goal frequencies for each interval
     x = np.arange(12)
-    print(fr_interval)
     plt.bar(x, fr_interval)
     plt.show()
                 
-            
         
+# For each team, find the 10 that scored the most in the 81-90 min range 
+# which is interval number 11 (index 10).
+    
+    team_scores_81_90 = {}
+    
+    for i in range(len(goals_df)):
+        team_id = goals_df['teamId'][i]
+        
+        if team_id not in team_scores_81_90.keys():
+            team_scores_81_90[team_id] = 0
+        
+        # If the scored goal happened in 
+        interval = goals_df['eventInterval'][i]
+        if interval == 10:
+            team_scores_81_90[team_id] += 1
+
+    
+    # Make a DataFrame so we can easily merge with the teams dataset
+    team_scores_81_90 = pd.DataFrame(list(team_scores_81_90.items()), columns=['wyId', 'Scores8190'])
+    team_scores_81_90 = team_scores_81_90.merge(teams, on='wyId', how='inner')
+    team_scores_81_90 = team_scores_81_90.sort_values(by='Scores8190', ascending=False)
+    team_scores_81_90 = team_scores_81_90.reset_index(drop=True)
+    
+    for i in range(10):
+        team_name = team_scores_81_90['officialName'][i]
+        team_goals_81_90 = team_scores_81_90['Scores8190'][i]
+        
+        print('(%d°) - %s has scored %d goals in the [81-90) minutes range.' %  (i+1, team_name, team_goals_81_90))
+    
+# CRQ1 - III
+    print()
+
+    players_eight_intervals = {}
+    
+    # Build list
+    for i in range(len(goals_df)):
+        player_id = goals_df['playerId'][i]
+        goal_interval = int(goals_df['eventInterval'][i])
+        
+        if player_id not in players_eight_intervals.keys():
+            players_eight_intervals[player_id] = np.zeros(12)
+        
+        players_eight_intervals[player_id][goal_interval] = 1
+        
+    for key in players_eight_intervals.keys():
+        
+        num_goals_in_intervals = sum(players_eight_intervals[key])
+        
+        if num_goals_in_intervals >= 8:
+            player_name = players.loc[players['wyId'] == key, 'shortName'].iloc[0]
+            
+            # Disable this in case it was not requested.
+            print('\t%s has scored goals in %d different intervals.' % (player_name, num_goals_in_intervals))
+    
+    print()
+
+    if len(players_eight_intervals.keys()) > 0:
+        print('So there are players that scored goals in at least 8 different intervals.')
+    else:
+        print('Unfortunately there were not any players that scored goals in 8 different intervals.')
         
