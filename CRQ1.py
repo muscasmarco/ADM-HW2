@@ -53,9 +53,6 @@ if __name__ == '__main__':
         
         minutes = seconds // 60.0
         
-        if minutes == 0:
-            print('Goal at first minute,',period)
-        
         if period == '1H':
             if minutes < 45:
                 interval = minutes // 9 # 1H with no extra time
