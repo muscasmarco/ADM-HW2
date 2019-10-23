@@ -6,8 +6,9 @@ Created on Thu Oct 17 15:10:37 2019
 @author: marco
 """
 import pandas as pd
-import json
+import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 if __name__ == '__main__':
     print('Loading the events dataset')
@@ -53,17 +54,33 @@ if __name__ == '__main__':
             
             if failed != 0:
                 ratio = successful / (successful + failed)
-        
-            plot_list.append([height, ratio])
+            
+            if ratio != 0:
+                plot_list.append([height, ratio])
             
     # Plotting
+    plot_list.sort(key=lambda x : x[0])
     height_list = [p[0] for p in plot_list]
     ratio_list = [p[1] for p in plot_list]
     
+    interval_width = len(plot_list) / 4
     
     plt.xlabel = 'height'
     plt.ylabel = 's/f ratio'
-    plt.scatter(height_list, ratio_list)
+    
+    #avg_height = sum(height_list)/len(height_list)
+    #colors = ['blue', 'yellow', 'orange', 'red', 'green', 'purple', 'grey', 'black', 'pink',
+    #          'cyan']
+    
+    colors = cm.rainbow(np.linspace(0, 10, len(plot_list)))
+    
+    min_height = min(height_list)
+    for i in range(len(plot_list)):
+        r = plot_list[i]
+                
+        plt.scatter(r[0], r[1], lw=0.1, c = colors[int((r[0] - min_height)//5)])
+                    
+    
     plt.axis([min(height_list)-5, max(height_list)+5, 0, 1])
     
     

@@ -109,6 +109,7 @@ if __name__ == "__main__":
             coach_birthday = coaches['birthDate'][i]
             age = get_age(coach_birthday)
             age_distribution.append(age)
-            
+    
+    
     plt.boxplot(age_distribution)
     plt.show()
