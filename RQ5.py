@@ -6,9 +6,7 @@ Created on Thu Oct 17 15:10:37 2019
 @author: marco
 """
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 
 if __name__ == '__main__':
     print('Loading the events dataset')
@@ -68,17 +66,15 @@ if __name__ == '__main__':
     plt.xlabel = 'height'
     plt.ylabel = 's/f ratio'
     
-    #avg_height = sum(height_list)/len(height_list)
-    #colors = ['blue', 'yellow', 'orange', 'red', 'green', 'purple', 'grey', 'black', 'pink',
-    #          'cyan']
+    colors = ['blue', 'yellow', 'orange', 'red', 'green', 'purple', 'grey', 'black', 'pink']
     
-    colors = cm.rainbow(np.linspace(0, 10, len(plot_list)))
     
+    height_interval = 5
     min_height = min(height_list)
     for i in range(len(plot_list)):
         r = plot_list[i]
                 
-        plt.scatter(r[0], r[1], lw=0.1, c = colors[int((r[0] - min_height)//5)])
+        plt.scatter(r[0], r[1], lw=0.1, c = colors[int((r[0] - min_height)//height_interval % len(colors))])
                     
     
     plt.axis([min(height_list)-5, max(height_list)+5, 0, 1])
