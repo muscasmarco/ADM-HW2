@@ -81,7 +81,7 @@ if __name__ == '__main__':
     plt.figure(figsize=(20,5))
     x = pd.DataFrame(Player_list, columns=['name', 'ratio', 'nationality']).groupby('nationality').count()[['name']]
     plt.bar(height=x['name'], x = x.index)
-
+    plt.xticks(x.index, rotation = 'vertical')
     plt.show()
     
     
