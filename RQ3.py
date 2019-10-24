@@ -7,12 +7,12 @@ Created on Thu Oct 17 02:32:20 2019
 import pandas as pd
 import time
 import operator
+import seaborn as sns
 import matplotlib.pyplot as plt
 from datetime import date
 
 def coaches_dictionary(coaches):
     coach  = {}
-    count = 0
     
     for i in range(len(coaches)):
         key = coaches['currentTeamId'][i]
@@ -29,7 +29,6 @@ def coaches_dictionary(coaches):
                 if new_date < found_date:
                     coach[key] = new_birth_date
                     
-    print(count)
     return coach
     
 def team_id_name_list(df):
@@ -65,7 +64,6 @@ def get_age(birthdate):
     days_in_year = 365.2425
     age = int((today - born).days / days_in_year)
     
-    print(age)
     return age
 
 if __name__ == "__main__":
@@ -110,6 +108,22 @@ if __name__ == "__main__":
             age = get_age(coach_birthday)
             age_distribution.append(age)
     
+        
+    # Create a figure instance
+    fig = plt.figure(1, figsize=(9, 6))
+    ax = fig.add_subplot(111)
+    sns.set_style("darkgrid")
+
     
-    plt.boxplot(age_distribution)
-    plt.show()
+    ax.set_xlabel('Team leagues', fontweight='bold')
+    ax.set_ylabel('Age', fontweight='bold')
+    fig.suptitle('Coaches age distribution', fontsize=14, fontweight='bold')
+    
+    b = sns.boxplot([age_distribution], ax=ax, orient='v', width=0.2)
+    ax = sns.swarmplot( data=age_distribution, color=".25")    
+    b.set_xticklabels(['Premier League'])
+    
+    
+    
+    
+    

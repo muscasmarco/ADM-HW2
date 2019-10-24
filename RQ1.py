@@ -107,15 +107,6 @@ if __name__ == '__main__':
     players_ds = pd.read_json('./dataset/players.json')
     coaches_ds = pd.read_json('./dataset/coaches.json')
     teams_ds = pd.read_json('./dataset/teams.json')
-
-    
-    #events_ds = pd.read_json('./dataset/events_England.json')
-    
-    #complete_ds =teams_ds.merge(matches_ds, on='wyId', how='inner') # 
-    
-        
-    #complete_dataframe = complete_dataframe.merge(sift_dataset, on='photoid', how='inner')
-    #nationalities = ['England', 'France', 'Germany', 'Italy', 'Spain']
     nationalities = ['England']
     
     res = {}
@@ -134,11 +125,7 @@ if __name__ == '__main__':
     for key in res.keys():
         team_data = res[key]
         
-        plt.legend(bbox_to_anchor =(1,1),
-                   loc='lower left',
-                   ncol=2,
-                   mode="expand",
-                   borderaxespad=0)
+       
         week = range(1, 39)
         week_names = []
         for i in week:
@@ -160,7 +147,6 @@ if __name__ == '__main__':
     teams_streaks.sort(key = lambda teams_streaks: teams_streaks[1][0])
     teams_streaks_loss.sort(key = lambda teams_streaks_loss: teams_streaks_loss[1][0])
 
-    
     teams_streaks.reverse()
     teams_streaks_loss.reverse()
 
