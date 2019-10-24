@@ -26,9 +26,10 @@ def get_score_from_label(string):
     return teams, score
 
 def get_dict_results(nationality):
-    ds_path = str('./dataset/matches/matches_'+nationality+'.json')
+    #ds_path = str('./dataset/matches_'+nationality+'.json')
+    ds_path = './dataset/matches/matches_'+nationality+'.json'
+    print(ds_path)
     matches_ds = pd.read_json(ds_path)
-
 
     results = {}
     
@@ -116,10 +117,12 @@ if __name__ == '__main__':
     #complete_dataframe = complete_dataframe.merge(sift_dataset, on='photoid', how='inner')
     #nationalities = ['England', 'France', 'Germany', 'Italy', 'Spain']
     nationalities = ['England']
+    
     res = {}
     teams_streaks = []
     teams_streaks_loss = []
     # Merge dictionaries
+    
     for nat in nationalities:
         tmp_res = get_dict_results(nat)
         res.update(tmp_res)
@@ -151,8 +154,8 @@ if __name__ == '__main__':
         teams_streaks_loss.extend([[key, team_streak_loss]])
         
         plt.plot(week_names, points, label = key)
-        
-    plt.legend(bbox_to_anchor=(1, 1), loc='best', ncol=1)
+    
+    plt.legend(bbox_to_anchor=(1, 1))
     plt.show()
     teams_streaks.sort(key = lambda teams_streaks: teams_streaks[1][0])
     teams_streaks_loss.sort(key = lambda teams_streaks_loss: teams_streaks_loss[1][0])
@@ -168,6 +171,6 @@ if __name__ == '__main__':
     first_best = teams_streaks[0]    
     second_best = teams_streaks[1]
     
-    print("first_worst = %s, second_worst= %s\nfirst_best= %s, second_best= %s" % (first_worst[0], second_worst[0], first_best[0], second_best[0]))
+    print("first_worst = %s second_worst= %s \nfirst_best= %s, second_best= %s" % (first_worst[0], second_worst[0], first_best[0], second_best[0]))
     
     
