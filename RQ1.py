@@ -153,27 +153,34 @@ if __name__ == '__main__':
     # Since the figure to plot in will be used after in a loop, 
     # we declare it before said loop. Also setting the style.
     plt.style.use('seaborn-darkgrid')
-    fig = plt.figure(figsize=(10,5))
-
-    for key in res.keys(): # A key is a team id
-        team_data = res[key] # Get the season performance array
+    fig = plt.figure(figsize=(10,7))
+    
+    # Sorting now so the legend in the plot is ordered by team performance
+    team_scores = [[key, res[key]] for key in res.keys()]
+    team_scores.sort(key=lambda r : sum(r[1]))
+    team_scores.reverse()
+    
+    for team in team_scores: # A key is a team id
+        team_name = team[0]
+        team_data = team[1] # Get the season performance array
         
         week_names = list(range(1, 39))
         
         points = np.zeros(38) # Total points
         for i in range(0, 38):
-            points[i] = sum(team_data[0:i]) # For the line plot, we want the total number of points until the nth week
+            points[i] = sum(team_data[0:i+1]) # For the line plot, we want the total number of points until the nth week
+            
         
         # Here calculate the performance of the team using its 'performance array'
         team_streak = max_streak(team_data)
         team_streak_loss= min_streak(team_data)
         
         # Save the streaks for later, also save the key for later name retrieval
-        teams_streaks.extend([[key, team_streak]])
-        teams_streaks_loss.extend([[key, team_streak_loss]])
+        teams_streaks.extend([[team_name, team_streak]])
+        teams_streaks_loss.extend([[team_name, team_streak_loss]])
         
         # Add line to the plot
-        plt.plot(week_names, points, label = key) #Without calling plt.show() immediately after, the lines will overlap
+        plt.plot(week_names, points, label=team_name) #Without calling plt.show() immediately after, the lines will overlap
     
     plt.legend(bbox_to_anchor=(1, 1)) # Make a legend and put it on the right
     plt.xticks(week_names) # Give the names for each week (tick is an increment, so a new week)
