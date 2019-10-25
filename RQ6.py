@@ -12,16 +12,15 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     event_ds = pd.read_json('../DS/events_England.json')
     player_ds = pd.read_json('../DS/players.json')
-
+    
     #threshold
     #each player has howmany passes made and calculate the mean for all players
-    data = event_ds[event_ds["subEventId"].isin([i for i in range(80,87)])].groupby(["playerId"]).count()
-    data.reset_index(drop=False,inplace=True)
-    threshold = data["eventId"].mean()
+    all_passes = event_ds[event_ds["subEventId"].isin([i for i in range(80,87)])].groupby(["playerId"]).count()
+    all_passes.reset_index(drop=False,inplace=True)
+    threshold = all_passes["eventId"].mean()
     
-    
-    #check for all kind of passes with accuration
-    player_performance = {}
+    #check for all kind of passes with accuration(successful passes)
+    passes_successful = {}
     for i in range(len(event_ds)):
         event_type = event_ds['subEventId'][i]
         if event_type in range(80,87):
@@ -29,19 +28,19 @@ if __name__ == '__main__':
             tag_values = [t['id'] for t in tags]
             player_id = event_ds['playerId'][i]
             
-            if player_id not in player_performance.keys():
-                player_performance[player_id] = [0, 0]
+            if player_id not in passes_successful.keys():
+                passes_successful[player_id] = [0, 0]
                 
             if 1801 in tag_values:
-                # Successful
-                player_performance[player_id][0] += 1
+                # Success
+                passes_successful[player_id][0] += 1
             else:
-                # Attempted and failed
-                player_performance[player_id][1] += 1
+                # failure
+                passes_successful[player_id][1] += 1
              
                 
     # calculation of the ratio and showing it with players shortnames and their wyId
-    #adding the nationality of players to the list
+    # adding the nationality of players to the list
     Player_list = []
     dic = dict(player_ds["birthArea"])
     for i in range(len(player_ds)):
@@ -51,18 +50,17 @@ if __name__ == '__main__':
             v = dic.get(i).get("name")
         except:
             pass
-            
-    
-        player_data = data.loc[data.playerId == player_id , "tags"]
-  
+        
+        # for having number of passes that each player had
+        player_data = all_passes.loc[all_passes.playerId == player_id , "tags"]
         if player_data is not None and len(player_data) > 0:      
             number_passes = player_data.tolist()[0]
             
-            #using the threshold
+            #using the threshold so if a player has less passes than the threshold we are not going to consider that player
             if number_passes >= threshold: 
-                if player_id in player_performance.keys():
-                    successful = player_performance[player_id][0]
-                    failed = player_performance[player_id][1]
+                if player_id in passes_successful.keys():
+                    successful = passes_successful[player_id][0]
+                    failed = passes_successful[player_id][1]
                     
                     ratio = 0 
                     if failed != 0:
@@ -73,7 +71,7 @@ if __name__ == '__main__':
     Player_list.sort(key=operator.itemgetter(1))
     Player_list.reverse()
     
-    #printing the list
+    #printing the list of all players short names and their ratio and their nationality
     for i in range(len(Player_list)):
         print('(%d) - %s' % (i+1, Player_list[i]))
     
@@ -83,6 +81,7 @@ if __name__ == '__main__':
     plt.bar(height=x['name'], x = x.index)
     plt.xticks(x.index, rotation = 'vertical')
     plt.show()
+    # from the plot it is obvious that english players are more likely to have high ratio for successful passes
     
     
         
