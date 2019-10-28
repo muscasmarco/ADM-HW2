@@ -44,8 +44,7 @@ def get_player_id(name, last_name):
         
     return -1
 
-def get_match_events(match_id, player1_id, player2_id, nationality):
-    events_dataset = pd.read_json(str('./dataset/events/events_%s.json' % nationality))
+def get_match_events(events_dataset, match_id, player1_id, player2_id, nationality):
     event_types = ['pass', 'shot', 'duel', 'free kick']
     events = {player1_id:[], player2_id:[]}
     
@@ -54,17 +53,26 @@ def get_match_events(match_id, player1_id, player2_id, nationality):
         
         if event_match_id == match_id:
             player_id = events_dataset['playerId'][i]
-            event_type = events_dataset['eventName'][i]
-
-            if event_type.lower() in event_types:
-                
-                positions = events_dataset['positions'][i]
-                if player_id == player1_id:
-                    events[player1_id].append(positions)
-                if player_id == player2_id:
-                    events[player2_id].append(positions)
-
-                
+            
+            if player1_id == player_id or player2_id == player_id:    
+                event_type = events_dataset['eventName'][i]
+    
+                if event_type.lower() in event_types:
+                    
+                    positions = events_dataset['positions'][i]
+                    match_period = events_dataset['matchPeriod'][i]
+                    
+                    positions = [positions[0]['x'], 100 - positions[0]['y']]
+                    
+                    if match_period == '1H' and False:
+                        positions[0] = 100 - positions[0]
+                        positions[1] = 100 - positions[1]
+                        
+                    positions[0] = 120 * positions[0] * 0.01
+                    positions[1] = 80 * positions[1] * 0.01
+                    
+                    events[player_id].append(positions)
+                  
     return events
     
 
@@ -96,7 +104,7 @@ def draw_pitch(ax):
     for i in element:
         ax.add_patch(i)
 
-def print_field_performance(events, player_id, x_positions, y_positions, color):
+def print_field_performance(positions, color):
     # Print the field
     fig=plt.figure() #set up the figures
     fig.set_size_inches(7, 5)
@@ -107,13 +115,18 @@ def print_field_performance(events, player_id, x_positions, y_positions, color):
     plt.axis('off')
     # End drawing field
     
+    x_positions = [p[0] for p in positions]
+    y_positions = [p[1] for p in positions]
+    
     sns.kdeplot(x_positions, y_positions, shade = "True", color = color, n_levels = 30)
    
     plt.show()
 
 if __name__ == '__main__':
     nationality = 'Spain'
-    
+    events_dataset = pd.read_json(str('./dataset/events/events_%s.json' % nationality))
+    matches_dataset = pd.read_json(('./dataset/matches/matches_%s.json' % nationality))
+
     match_id = get_match_id('Barcelona', 'Real Madrid', '2018-5-6', nationality)
     
     if match_id == -1:
@@ -123,20 +136,14 @@ if __name__ == '__main__':
     ronaldo_id = get_player_id('Cristiano', 'Ronaldo')
     messi_id = get_player_id('Lionel', 'Messi')
     
-    events = get_match_events(match_id, ronaldo_id, messi_id, 'Spain')
+    events = get_match_events(events_dataset, match_id, ronaldo_id, messi_id, 'Spain')
     
-    
-    ronaldo_x_positions = [event[0]['x'] for event in events[ronaldo_id]]
-    ronaldo_y_positions = [event[1]['y'] for event in events[ronaldo_id]]
 
     print('Ronaldo performance heatmap:')
-    print_field_performance(ronaldo_x_positions, ronaldo_y_positions, 'red')
+    print_field_performance(events[ronaldo_id], 'blue')
     
-    messi_x_positions = [event[0]['x'] for event in events[messi_id]]
-    messi_y_positions = [event[1]['y'] for event in events[messi_id]]
-
     print('Messi performance heatmap: ')
-    print_field_performance(messi_x_positions, messi_y_positions, 'green')
+    print_field_performance(events[messi_id], 'green')
         
     
     
