@@ -136,24 +136,18 @@ We can see that for each splitting of the array the function is being called $lo
 \subsection*{Question 2}
 
 The algorithm in analysis, according to what we found, is supposed to reverse a list of integers, where the number of the elements
-list should be $2^n$: this is the ideal case. Unfortunately if the list size differs from a number expressed as $2^n$, it behaves
+list should be $2^k$: this is the ideal case. Unfortunately if the list size differs from a number expressed as $2^k$, it behaves
 differently. 
-\vspace{.4cm}
 
 For example, if we consider an array of size $2^k + 1$, we found the list is correctly reversed except for the last element, which
 is left where it originally was. For a size of $2^k + 2$ the list is reversed,except for at position $(2^k + 2)/2$ and the last element, which are swapped.
-\vspace{.4cm}
 
 Such behaviour is caused by the nature of the definition of the recursive step $2T(n/2)$, which might not be effective 
-when $n$ is not a power of $2$. It brings rounding errors in the indexes used for splitting the array and swapping elements.
+when $n$ is not a power of $2$ (or at least a multiple). It brings rounding errors in the indexes used for splitting the array and swapping elements.
 
 \subsubsection*{What does it do?}
 
-For $n > 1$, the \textproc{splitSwap} function splits\footnotemark[1]   the array into two halves. It continues to do so for each sub-array, 
-until a minimum sub-array size is reached. It then starts merging\footnotemark[1] using \textproc{swapList} the two sub arrays at a time,
-swapping the order of the elements from left to right: this means that the element at index $i$ is swapped with the one at 
-$i + n'/2$, then $i$ is incremented by $1$. Side note, $n'$ is the size of the sub-array and $i$ is incremented until it reaches
-the value of $n'/2$
+For $n > 1$, the \textproc{splitSwap} function splits\footnotemark[1]   the array into two halves. It continues to do so for each sub-array, until a minimum sub-array size is reached. It then starts merging\footnotemark[1] using \textproc{swapList} the two sub arrays at a time,swapping the order of the elements from left to right: this means that the element at index $i$ is swapped with the one at $i + n'/2$, then $i$ is incremented by $1$. Side note, $n'$ is the size of the sub-array and $i$ is incremented until it reaches the value of $n'/2$
 
 From line 4 of \textproc{splitSwap} we can observe that the split-merge-reverse happens to the first half of the array first, 
 then the second one, until both halves are ready to be merged again (before one last swapping across them). 
@@ -165,10 +159,9 @@ be significantly reduced. Given an array of length $n$, doing the swapping on th
 
 The second reason is memory allocated for the array in the ideal case: having $2^k$ elements in memory becomes a problem for 
 high values of $k$. The third reason is a consequence of the previous point: the number of recursive calls might be ignored since it is the logarithm of the size of the array, but doing the swapping for $2^k$ elements might be problematic for high values of $k$ (tests showed this).
-\vspace{.4cm}
 
-In the non-ideal case, where the size of the array is not expressed as a power of 2, it's hard to tell if it's optimal. For such an array the algorithm does not reverse the list, since some elements end up at the wrong index (when compared to the 
-expected result of an array reversing algorithm). 	
-
+In the non-ideal case, where the size of the array is not expressed as a power of 2, it's hard to tell if it's optimal. For such an array the algorithm does not reverse the list, as some elements end up at the wrong index (when compared to the 
+expected result of an array reversing algorithm). Since it's not reversing an array, we would first need to define what exactly 
+it needs to do to tell if it's optimal or at least define new functions able to make corrections on the approximation of the indexes.
 \footnotetext[1]{When talking about splitting and merging we don't mean that this happens by using multiple separated references for each sub-array. We mean that the indexes allow us to consider only portions of the array.}
 \end{document}
