@@ -73,7 +73,7 @@ We can already start dropping lower order terms and constants that don't help us
 $$ T_2(n) = n/2 $$
 
 We can now try to find a function that allow us to define the complexity of the \textproc{splitSwap} function.
-\vspace{1cm}
+\vspace{.4cm}
 
 Let $f(n) = n $ and $g(x) = T_2(n) = n/2$. If we are able to find a $c \in \realpositivenumbers$ such that for 
 any $n \geq n_0$ we have that $g(n) \leq cf(n)$, we can say that \textproc{splitSwap} is $\bigO(n)$.
@@ -91,7 +91,7 @@ $$ n/2 \geq c n $$
 $$ c \leq \frac{1}{2} $$
 
 We have found a constant so that $g(x) \geq \frac{1}{2}\ f(x)$ for all $n \geq n_0$, so we can say that $g(x)$ is $\Omega(n)$.
-\vspace{1cm}
+\vspace{.4cm}
 
 Since we want also to build a tighter bound for defining the complexity of $g(x)$, we can intersect the previously found sets of constants $c$ such that $c\ f(n) \geq g(n) \geq c\ h(n)$, we find that $c = \frac{1}{2}$ is the only solution.
 
@@ -131,12 +131,12 @@ a perfect power of $2$.
 \centering
 \end{figure}
 
-We can see that for each splitting of the array the function is being called $log_2{(n)}$ times, each call will cost us $\theta(n)$, hence our result $\theta(n\ log_2{(n)}$.
+We can see that the function is being called $log_2{(n)}$ times, each function call will cost us $\theta(n)$, hence our result $\theta(n\ log_2{(n)}$.
 
 \subsection*{Question 2}
 
 The algorithm in analysis, according to what we found, is supposed to reverse a list of integers, where the number of the elements
-list should be $2^k$: this is the ideal case. Unfortunately if the list size differs from a number expressed as $2^k$, it behaves
+list should be $2^k$ ($k \in \mathbb{N}$): this is the ideal case. Unfortunately if the list size differs from a number expressed as $2^k$, it behaves
 differently. 
 
 For example, if we consider an array of size $2^k + 1$, we found the list is correctly reversed except for the last element, which
@@ -150,7 +150,7 @@ when $n$ is not a power of $2$ (or at least a multiple). It brings rounding erro
 For $n > 1$, the \textproc{splitSwap} function splits\footnotemark[1]   the array into two halves. It continues to do so for each sub-array, until a minimum sub-array size is reached. It then starts merging\footnotemark[1] using \textproc{swapList} the two sub arrays at a time,swapping the order of the elements from left to right: this means that the element at index $i$ is swapped with the one at $i + n'/2$, then $i$ is incremented by $1$. Side note, $n'$ is the size of the sub-array and $i$ is incremented until it reaches the value of $n'/2$
 
 From line 4 of \textproc{splitSwap} we can observe that the split-merge-reverse happens to the first half of the array first, 
-then the second one, until both halves are ready to be merged again (before one last swapping across them). 
+then the second one, until both halves are ready to be merged again when they are the of same length.  
 
 \subsubsection*{Is it optimal?}
 
