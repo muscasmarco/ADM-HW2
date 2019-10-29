@@ -34,8 +34,8 @@ if __name__ == '__main__':
     x_squared = []
     log = []
 
-    for i in range(1, 18):
-        n = 2 ** i
+    for i in range(1,2):
+        n = 20
         array = list(range(1, n+1))
         #print(' Input: ', array)
         start_time = time.time()
@@ -72,6 +72,6 @@ if __name__ == '__main__':
     plt.ylabel('f(n) = x^2')
     plt.xticks(np.arange(0, len(array_sizes)), array_sizes, rotation='vertical')
     #plt.yticks([])
-    plt.show()
+    plt.show()  
     
     

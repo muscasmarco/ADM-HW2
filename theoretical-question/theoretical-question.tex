@@ -6,6 +6,7 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage[bottom]{footmisc}
 \newcommand{\realpositivenumbers}{\mathbb{R}_{>0}} %Real numbers symbol
 \newcommand{\bigO}{\mathcal{O}}
 
@@ -54,7 +55,9 @@ You are given the following functions:
 \end{enumerate}
 \pagebreak
 
-\subsection*{1. Solution}
+\section*{Solution}
+
+\subsection*{Question 1}
 
 Let's start by first analyzing the second function, \textproc{swapList} as it is called inside the other function we want to 
 analyze. 
@@ -124,11 +127,48 @@ a perfect power of $2$.
                                                                                                                                                                                                                                                                      
 
                                                                                                                                                                                                                                                                     It might be easier to visualize using this recursion tree representation:
-                                                                                                                                                                                                                                                                    \begin{figure}[h]                                                                                                                                                                                                                                                                    \caption{Image from \textit{Introduction to Algorithms, CLRS}}                                                                                                                                                                                                                                                                     \includegraphics[scale=.4]{./recursion_tree_clrs.png}                                                                                                                                                                                                                                                                   
+                                                                                                                                                                                                                                                                    \begin{figure}[h]                                                                                                                                                                                                                                                                    \caption{Image from \textit{Introduction to Algorithms, CLRS}}                                                                                                                                                                                                                                                                     \includegraphics[scale=.35]{./recursion_tree_clrs.png}                                                                                                                                                                                                                                                                   
 \centering
 \end{figure}
 
-                                                                                                                                                                                                                                                                     
+We can see that for each splitting of the array the function is being called $log_2{(n)}$ times, each call will cost us $\theta(n)$, hence our result $\theta(n\ log_2{(n)}$.
 
+\subsection*{Question 2}
 
+The algorithm in analysis, according to what we found, is supposed to reverse a list of integers, where the number of the elements
+list should be $2^n$: this is the ideal case. Unfortunately if the list size differs from a number expressed as $2^n$, it behaves
+differently. 
+\vspace{.4cm}
+
+For example, if we consider an array of size $2^k + 1$, we found the list is correctly reversed except for the last element, which
+is left where it originally was. For a size of $2^k + 2$ the list is reversed,except for at position $(2^k + 2)/2$ and the last element, which are swapped.
+\vspace{.4cm}
+
+Such behaviour is caused by the nature of the definition of the recursive step $2T(n/2)$, which might not be effective 
+when $n$ is not a power of $2$. It brings rounding errors in the indexes used for splitting the array and swapping elements.
+
+\subsubsection*{What does it do?}
+
+For $n > 1$, the \textproc{splitSwap} function splits\footnotemark[1]   the array into two halves. It continues to do so for each sub-array, 
+until a minimum sub-array size is reached. It then starts merging\footnotemark[1] using \textproc{swapList} the two sub arrays at a time,
+swapping the order of the elements from left to right: this means that the element at index $i$ is swapped with the one at 
+$i + n'/2$, then $i$ is incremented by $1$. Side note, $n'$ is the size of the sub-array and $i$ is incremented until it reaches
+the value of $n'/2$
+
+From line 4 of \textproc{splitSwap} we can observe that the split-merge-reverse happens to the first half of the array first, 
+then the second one, until both halves are ready to be merged again (before one last swapping across them). 
+
+\subsubsection*{Is it optimal?}
+
+In the ideal case, so when the size of the array is a power of 2, then no: for three reasons. First the number of steps could 
+be significantly reduced. Given an array of length $n$, doing the swapping on the elements at index $i$ and $(n-i)$ then incrementing $i$ until reaching the value $i = n/2$, brings better performance (it is executed in linear time). 
+
+The second reason is memory allocated for the array in the ideal case: having $2^k$ elements in memory becomes a problem for 
+high values of $k$. The third reason is a consequence of the previous point: the number of recursive calls might be ignored since it is the logarithm of the size of the array, but doing the swapping for $2^k$ elements might be problematic for high values of $k$ (tests showed this).
+\vspace{.4cm}
+
+In the non-ideal case, where the size of the array is not expressed as a power of 2, it's hard to tell if it's optimal. For such an array the algorithm does not reverse the list, since some elements end up at the wrong index (when compared to the 
+expected result of an array reversing algorithm). 	
+
+\footnotetext[1]{When talking about splitting and merging we don't mean that this happens by using multiple separated references for each sub-array. We mean that the indexes allow us to consider only portions of the array.}
 \end{document}
